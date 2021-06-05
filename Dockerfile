@@ -1,6 +1,4 @@
-# Image for compiling using act
-
-# based on the act - medium docker file
+# Este archivo realiza la creación de un contenedor en ubuntu e instala mono, esto a fin de agiliar el proceso de generación de documentación
 FROM catthehacker/ubuntu:act-latest
 
 RUN apt install gnupg ca-certificates \
