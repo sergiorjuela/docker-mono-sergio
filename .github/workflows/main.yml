@@ -1,0 +1,37 @@
+name: Crear y publicar imagen del contenedor mono en Docker Hub
+on:
+  push:
+    branches: [ main ]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Instalar docker-cli si está corriendo en act
+        if: ${{ env.ACT }}
+        run: |
+          sudo apt-get update -y 
+          sudo apt-get install -y docker-ce-cli
+      - name: Hacer Check Out del repositorio en Github
+        uses: actions/checkout@v2
+
+      - name: Hacer login en el sitio de Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+
+      - name: Configurar Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Construir la imagen y enviarla a Docker Hub
+        id: docker_build
+        uses: docker/build-push-action@v2
+        with:
+          context: ./
+          file: ./Dockerfile
+          push: true
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/mono:latest
+
+      - name: Mostrar la información digest
+        run: echo ${{ steps.docker_build.outputs.digest }}
